@@ -5,27 +5,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.quickseries.R
+import com.example.quickseries.databinding.ResourceDetailsFragmentBinding
 import com.example.quickseries.models.AccessModel
 import com.example.quickseries.models.ResourceDetails
-import kotlinx.android.synthetic.main.resourses_fragment.*
-import kotlinx.android.synthetic.main.resourses_fragment.view.*
 
 class ResourceDetailsView : Fragment()
 {
-
+    private lateinit var binding: ResourceDetailsFragmentBinding
     private lateinit var viewModel: ResourceDetailsViewViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        val view = inflater.inflate(R.layout.resource_details_fragment, container, false)
-        val adapter = ResourceDetailsAdapter(ResourceDetails())
-        view.mainView.adapter = adapter
-        view.mainView.layoutManager = LinearLayoutManager(activity)
-        return view
+        binding = ResourceDetailsFragmentBinding.inflate(inflater, container, false)
+
+        context?.let {
+            val adapter = ResourceDetailsAdapter(ResourceDetails(), it)
+            binding.mainView.adapter = adapter
+        }
+
+        binding.mainView.layoutManager = LinearLayoutManager(activity)
+        return binding.root
     }
 
     private fun onItemClicked(view: View)
@@ -52,19 +54,20 @@ class ResourceDetailsView : Fragment()
         //here is the place for injection
         val factory = ResourceDetailsViewViewModelFactory(AccessModel.Network, safeArgs.resourceDetails)
 
-        viewModel = ViewModelProviders
-                .of(this, factory)
+        viewModel = ViewModelProvider(this, factory)
                 .get(ResourceDetailsViewViewModel::class.java)
 
-        viewModel.data.observe(this, Observer { updateView(it) })
+        viewModel.data.observe(viewLifecycleOwner, { updateView(it) })
     }
 
     private fun updateView(resource: ResourceDetails)
     {
-        val adapter = ResourceDetailsAdapter(resource)
-        mainView.adapter = adapter
-        adapter.onItemClicked = { c -> onItemClicked(c)}
-        adapter.notifyDataSetChanged()
+        context?.let {
+            val adapter = ResourceDetailsAdapter(resource, it)
+            binding.mainView.adapter = adapter
+            adapter.onItemClicked = { c -> onItemClicked(c)}
+            adapter.notifyDataSetChanged()
+        }
     }
 
 }

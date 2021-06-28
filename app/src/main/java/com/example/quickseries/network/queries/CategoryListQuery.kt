@@ -25,24 +25,21 @@ class CategoryListQuery : IQuery<List<Categories>>
     {
         val queue = Volley.newRequestQueue(app.getContextObject())
 
-        val stringReq = StringRequest(Request.Method.GET, url, Response.Listener<String>
+        val stringReq = StringRequest(Request.Method.GET, url, {
+            try
             {
-                try
-                {
-                    val listType = object : TypeToken<List<Categories>>() { }.type
-                    val data = Gson().fromJson<List<Categories>>(it, listType)
+                val listType = object : TypeToken<List<Categories>>() { }.type
+                val data = Gson().fromJson<List<Categories>>(it, listType)
 
-                    onSuccess?.invoke(data)
-                }
-                catch (e: Exception)
-                {
-                    Log.e("CategoryListQuery", e.toString())
-                }
-            },
-            Response.ErrorListener
+                onSuccess?.invoke(data)
+            }
+            catch (e: Exception)
             {
-                Log.e("CategoryListQuery", it?.message)
-            })
+                Log.e("CategoryListQuery", e.toString())
+            }
+        }, {
+            Log.e("CategoryListQuery", it?.message?:"")
+        })
 
         queue.add(stringReq)
     }

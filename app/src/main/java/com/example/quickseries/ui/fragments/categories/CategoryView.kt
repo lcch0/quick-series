@@ -1,38 +1,37 @@
 package com.example.quickseries.ui.fragments.categories
 
 import android.app.Activity
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.quickseries.R
+import com.example.quickseries.databinding.CategoriesFragmentBinding
 import com.example.quickseries.intefaces.views.ISortCallback
-import com.example.quickseries.intefaces.views.SortDirection
 import com.example.quickseries.models.AccessModel
 import com.example.quickseries.models.Category
 import com.example.quickseries.models.CategoryList
-import kotlinx.android.synthetic.main.categories_fragment.*
-import kotlinx.android.synthetic.main.categories_fragment.view.*
 
 class CategoryView : Fragment()
 {
     private lateinit var viewModel: CategoryViewViewModel
+    private lateinit var binding: CategoriesFragmentBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
-        val view = inflater.inflate(R.layout.categories_fragment, container, false)
+        binding = CategoriesFragmentBinding.inflate(inflater, container, false)
 
-        val adapter = CategoryAdapter(CategoryList())
-        adapter.onItemClicked = {onCategoryClicked(it)}
-        view.mainView.adapter = adapter
-        view.mainView.layoutManager = LinearLayoutManager(activity)
-        return view
+        context?.let {
+            val adapter = CategoryAdapter(CategoryList(), it)
+            adapter.onItemClicked = {a -> onCategoryClicked(a)}
+            binding.mainView.adapter = adapter
+        }
+
+        binding.mainView.layoutManager = LinearLayoutManager(activity)
+        return binding.root
     }
 
     private fun attachSortCallback(activity: Activity?)
@@ -47,21 +46,22 @@ class CategoryView : Fragment()
 
         val factory = CategoryViewViewModelFactory(AccessModel.Network)
 
-        viewModel = ViewModelProviders
-                .of(this, factory)
+        viewModel = ViewModelProvider(this, factory)
                 .get(CategoryViewViewModel::class.java)
 
-        viewModel.categories.observe(this, Observer { updateView(it) })
+        viewModel.categories.observe(viewLifecycleOwner, { updateView(it) })
 
         attachSortCallback(activity)
     }
 
     private fun updateView(data: CategoryList)
     {
-        val adapter = CategoryAdapter(data)
-        adapter.onItemClicked = { c -> onCategoryClicked(c) }
-        mainView.adapter = adapter
-        adapter.notifyDataSetChanged()
+        context?.let {
+            val adapter = CategoryAdapter(data, it)
+            adapter.onItemClicked = { c -> onCategoryClicked(c) }
+            binding.mainView.adapter = adapter
+            adapter.notifyDataSetChanged()
+        }
     }
 
     private fun onCategoryClicked(category: Category)

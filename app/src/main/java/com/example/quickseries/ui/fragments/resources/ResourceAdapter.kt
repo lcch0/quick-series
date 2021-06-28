@@ -1,26 +1,27 @@
 package com.example.quickseries.ui.fragments.resources
 
+import android.content.Context
 import android.text.Html
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.quickseries.R
-import com.example.quickseries.extensions.inflate
+import com.example.quickseries.databinding.ListItemBinding
 import com.example.quickseries.intefaces.views.IClickCallback
 import com.example.quickseries.models.Category
 import com.example.quickseries.models.Resource
-import kotlinx.android.synthetic.main.list_item.view.*
 
 
-class ResourceAdapter(private val model: Category)
+class ResourceAdapter(private val model: Category, private val context: Context)
     : RecyclerView.Adapter<ResourceAdapter.ResourceViewHolder>(), IClickCallback<Resource>
 {
     override var onItemClicked: ((Resource) -> Unit)? = null
+    private lateinit var binding: ListItemBinding
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, res: Int): ResourceViewHolder
     {
-        val view = viewGroup.inflate(R.layout.list_item, false)
-        val md = ResourceViewHolder(view)
+        binding = ListItemBinding.inflate(LayoutInflater.from(context), viewGroup, false)
+        val md = ResourceViewHolder(binding)
         md.onItemClicked = {v -> onItemClicked(v)}
 
         return md
@@ -42,12 +43,12 @@ class ResourceAdapter(private val model: Category)
         holder.bindData(data, pos)
     }
 
-    class ResourceViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener, IClickCallback<View>
+    class ResourceViewHolder(private val binding1: ListItemBinding) : RecyclerView.ViewHolder(binding1.root), View.OnClickListener, IClickCallback<View>
     {
         override var onItemClicked: ((View) -> Unit)? = null
         init
         {
-            view.setOnClickListener(this)
+            binding1.root.setOnClickListener(this)
         }
 
         override fun onClick(v: View?)
@@ -58,9 +59,9 @@ class ResourceAdapter(private val model: Category)
 
         fun bindData(data: Resource, pos: Int)
         {
-            itemView.textDesc.text = data.name
-            itemView.textId.text = Html.fromHtml(data.htmlDesc)
-            itemView.tag = pos
+            binding1.textDesc.text = data.name
+            binding1.textId.text = Html.fromHtml(data.htmlDesc)
+            binding1.root.tag = pos
         }
 
     }

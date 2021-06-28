@@ -1,30 +1,27 @@
 package com.example.quickseries.ui.fragments.resourcedetails
 
+import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.quickseries.R
-import com.example.quickseries.extensions.inflate
+import com.example.quickseries.databinding.DetailsItemBinding
 import com.example.quickseries.intefaces.views.IClickCallback
 import com.example.quickseries.models.Address
 import com.example.quickseries.models.ResourceDetails
-import kotlinx.android.synthetic.main.address_item.view.*
-import kotlinx.android.synthetic.main.contacts_item.view.*
-import kotlinx.android.synthetic.main.contacts_item.view.textValue
-import kotlinx.android.synthetic.main.details_item.view.*
 
 
-class ResourceDetailsAdapter(private val model: ResourceDetails)
+class ResourceDetailsAdapter(private val model: ResourceDetails, private val context: Context)
     : RecyclerView.Adapter<ResourceDetailsAdapter.ResourceDetailsViewHolder>(), IClickCallback<View>
 {
+    private lateinit var binding: DetailsItemBinding
+
     override var onItemClicked: ((View) -> Unit)? = null
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, res: Int): ResourceDetailsViewHolder
     {
-        val view = viewGroup.inflate(R.layout.details_item, false)
-        val md = ResourceDetailsViewHolder(view, onItemClicked)
-
-        return md
+        binding = DetailsItemBinding.inflate(LayoutInflater.from(context), viewGroup, false)
+        return ResourceDetailsViewHolder(binding, onItemClicked)
     }
 
     override fun getItemCount(): Int = 1
@@ -34,7 +31,8 @@ class ResourceDetailsAdapter(private val model: ResourceDetails)
         holder.bindData(model)
     }
 
-    class ResourceDetailsViewHolder(view: View, private var callback: ((View) -> Unit)?) : RecyclerView.ViewHolder(view)
+    class ResourceDetailsViewHolder(private val binding: DetailsItemBinding,
+                                    private var callback: ((View) -> Unit)?) : RecyclerView.ViewHolder(binding.root)
     {
         fun bindData(data: ResourceDetails)
         {
@@ -44,22 +42,22 @@ class ResourceDetailsAdapter(private val model: ResourceDetails)
                 localAddress.add(Address())
 
             val address = localAddress[0]
-            itemView.textDetailsTitle.text = address.label
-            itemView.addressPart.textValue.text = data.getAddressString()
+            binding.textDetailsTitle.text = address.label
+            binding.addressPart.textValue.text = data.getAddressString()
 
-            initButton(itemView.addressPart.locationBtn, address.geoCoordinates)
+            initButton(binding.addressPart.locationBtn, address.geoCoordinates)
 
-            itemView.contactsPart.textValue.text = data.getContactsString()
+            binding.contactsPart.textValue.text = data.getContactsString()
 
             var value = data.contactInfo?.website
-            initButton(itemView.contactsPart.webBtn, value)
+            initButton(binding.contactsPart.webBtn, value)
 
             value = data.contactInfo?.email
-            initButton(itemView.contactsPart.emailBtn, value)
+            initButton(binding.contactsPart.emailBtn, value)
 
             value = data.contactInfo?.phoneNumber
-            initButton(itemView.contactsPart.msgBtn, value)
-            initButton(itemView.contactsPart.callBtn, value)
+            initButton(binding.contactsPart.msgBtn, value)
+            initButton(binding.contactsPart.callBtn, value)
         }
 
         private fun <T: Any?> initButton(view: View, value: T?)

@@ -1,25 +1,27 @@
 package com.example.quickseries.ui.fragments.categories
 
+import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.quickseries.R
-import com.example.quickseries.extensions.inflate
+import com.example.quickseries.databinding.ListItemBinding
 import com.example.quickseries.intefaces.views.IClickCallback
 import com.example.quickseries.models.Category
 import com.example.quickseries.models.CategoryList
-import kotlinx.android.synthetic.main.list_item.view.*
 
 
-class CategoryAdapter(private val model: CategoryList)
+class CategoryAdapter(private val model: CategoryList, private val context: Context)
     : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>(), IClickCallback<Category>
 {
+    private lateinit var binding: ListItemBinding
+
     override var onItemClicked: ((Category) -> Unit)? = null
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, res: Int): CategoryViewHolder
     {
-        val view = viewGroup.inflate(R.layout.list_item, false)
-        val md = CategoryViewHolder(view)
+        binding = ListItemBinding.inflate(LayoutInflater.from(context), viewGroup, false)
+        val md = CategoryViewHolder(binding)
         md.onItemClicked = {v -> onItemClicked(v)}
 
         return md
@@ -41,12 +43,12 @@ class CategoryAdapter(private val model: CategoryList)
         holder.bindData(data, pos)
     }
 
-    class CategoryViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener, IClickCallback<View>
+    class CategoryViewHolder(private val binding: ListItemBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener, IClickCallback<View>
     {
         override var onItemClicked: ((View) -> Unit)? = null
         init
         {
-            view.setOnClickListener(this)
+            binding.root.setOnClickListener(this)
         }
 
         override fun onClick(v: View?)
@@ -57,9 +59,9 @@ class CategoryAdapter(private val model: CategoryList)
 
         fun bindData(data: Category, pos: Int)
         {
-            itemView.textDesc.text = data.name
-            itemView.textId.text = data.id.toString()
-            itemView.tag = pos
+            binding.textDesc.text = data.name
+            binding.textId.text = data.id.toString()
+            binding.root.tag = pos
         }
 
     }

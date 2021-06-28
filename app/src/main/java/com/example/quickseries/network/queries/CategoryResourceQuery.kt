@@ -20,8 +20,7 @@ class CategoryResourceQuery(private val categoryId: String) : IQuery<Categories>
     {
         val queue = Volley.newRequestQueue(app.getContextObject())
 
-        val stringReq = StringRequest(Request.Method.GET, url, Response.Listener<String>
-        {
+        val stringReq = StringRequest(Request.Method.GET, url, {
             try
             {
                 val listType = object : TypeToken<List<Categories>>() { }.type
@@ -36,11 +35,9 @@ class CategoryResourceQuery(private val categoryId: String) : IQuery<Categories>
             {
                 Log.e("CategoryListQuery", e.toString())
             }
-        },
-                                      Response.ErrorListener
-                                      {
-                                          Log.e("CategoryListQuery", it?.message)
-                                      })
+        }, {
+            Log.e("CategoryListQuery", it?.message?:"")
+        })
 
         queue.add(stringReq)
     }

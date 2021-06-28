@@ -59,8 +59,10 @@ class ResourceDetails() : IModel, Parcelable
     {
         title = parcel.readString() ?: Resource.DEFAULT_NAME
         photo = parcel.readString()
-        address = address ?: mutableListOf()
-        parcel.readTypedList(address, Address.CREATOR)
+        address?.let {
+            parcel.readTypedList(it, Address.CREATOR)
+        }
+
         contactInfo = parcel.readParcelable(ContactInfo::class.java.classLoader)
         socialMedia = parcel.readParcelable(SocialMedia::class.java.classLoader)
     }

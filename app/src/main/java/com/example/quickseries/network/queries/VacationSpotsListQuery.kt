@@ -30,7 +30,7 @@ class VacationSpotsListQuery : IQuery<List<VacationSpot>>
     {
         val queue = Volley.newRequestQueue(app.getContextObject())
 
-        val stringReq = StringRequest(Request.Method.GET, url, Response.Listener<String> {
+        val stringReq = StringRequest(Request.Method.GET, url, {
             try
             {
                 parseJson(it)?.let{ d -> onSuccess?.invoke(d) }
@@ -39,8 +39,8 @@ class VacationSpotsListQuery : IQuery<List<VacationSpot>>
             {
                 Log.e("VacationSpotsListQuery", e.toString())
             }
-        }, Response.ErrorListener {
-            Log.e("VacationSpotsListQuery", it?.message)
+        }, {
+            Log.e("VacationSpotsListQuery", it?.message?:"")
         })
 
         queue.add(stringReq)

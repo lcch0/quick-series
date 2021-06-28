@@ -2,7 +2,6 @@ package com.example.quickseries.network.queries
 
 import android.util.Log
 import com.android.volley.Request
-import com.android.volley.Response
 import com.android.volley.toolbox.RequestFuture
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -30,7 +29,7 @@ class RestaurantListQuery : IQuery<List<Restorant>>
     {
         val queue = Volley.newRequestQueue(app.getContextObject())
 
-        val stringReq = StringRequest(Request.Method.GET, url, Response.Listener<String> {
+        val stringReq = StringRequest(Request.Method.GET, url, {
             try
             {
                 parseJson(it)?.let{ d -> onSuccess?.invoke(d)}
@@ -39,8 +38,8 @@ class RestaurantListQuery : IQuery<List<Restorant>>
             {
                 Log.e("RestaurantListQuery", e.toString())
             }
-        }, Response.ErrorListener {
-            Log.e("RestaurantListQuery", it?.message)
+        }, {
+            Log.e("RestaurantListQuery", it?.message?:"")
         })
 
         queue.add(stringReq)

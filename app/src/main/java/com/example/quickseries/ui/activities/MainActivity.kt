@@ -8,23 +8,25 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
 import com.example.quickseries.R
+import com.example.quickseries.databinding.ActivityMainBinding
 import com.example.quickseries.intefaces.views.ISortCallback
 import com.example.quickseries.intefaces.views.SortDirection
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), ISortCallback
 {
     private var sortDirection = SortDirection.Asc
     private lateinit var navController: NavController
+    private lateinit var binding: ActivityMainBinding
 
     override var onSort: ((SortDirection) -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
 
         navController = Navigation.findNavController(this, R.id.navHostFragment)
         NavigationUI.setupActionBarWithNavController(this, navController)
@@ -36,9 +38,9 @@ class MainActivity : AppCompatActivity(), ISortCallback
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean
+    override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
-        val id = item?.itemId ?: return false
+        val id = item.itemId
 
         if(id != R.id.sortBtn)
             return false
